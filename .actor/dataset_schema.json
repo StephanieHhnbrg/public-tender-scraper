@@ -1,0 +1,50 @@
+{
+    "actorSpecification": 1,
+    "fields": {},
+    "views": {
+        "overview": {
+            "title": "Overview",
+            "transformation": {
+                "fields": ["scrapedAt", "title", "link", "referenceNumber", "organization", "location", "type", "releaseDate", "deadline"]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "scrapedAt": { "label": "Scraped at", "format": "datetime" },
+                    "title": {
+                        "label": "Title",
+                        "format": "text"
+                    },
+                    "link": {
+                        "label": "URL",
+                        "format": "link"
+                    },
+                    "referenceNumber": {
+                        "label": "Reference number",
+                        "format": "text"
+                    },
+                    "organization": {
+                        "label": "Organization",
+                        "format": "text"
+                    },
+                    "location": {
+                        "label": "Location",
+                        "format": "text"
+                    },
+                    "type": {
+                        "label": "Type",
+                        "format": "text"
+                    },
+                    "releaseDate": {
+                        "label": "ReleaseDate",
+                        "format": "date"
+                    },
+                    "deadline": {
+                        "label": "Deadline",
+                        "format": "date"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "actorOutputSchemaVersion": 1,
+    "title": "Output schema",
+    "properties": {
+        "overview": {
+            "type": "string",
+            "title": "Overview",
+            "template": "{{links.apiDefaultDatasetUrl}}/items?view=overview"
+        },
+        "downloadCsv": {
+            "type": "string",
+            "title": "Download CSV",
+            "template": "{{links.defaultDatasetItemsUrl}}.csv"
+        },
+        "totalItems": {
+            "type": "string",
+            "title": "Number of tenders scraped",
+            "template": "{{stats.datasetItemCount}}"
+        }
+    }
+}
