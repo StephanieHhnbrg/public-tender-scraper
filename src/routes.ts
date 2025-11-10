@@ -26,14 +26,14 @@ function addDefaultHandlerToRouter() {
     });
 }
 
-async function inputKeyword(page: Page, keyword: string, log: Log) {
+async function inputKeyword(page: Page, log: Log, keyword: string) {
     await page.waitForSelector('#keywordString');
     await page.click('#keywordString');
     await page.fill('#keywordString', keyword);
     log.info(`🟣 Input keyword: ${keyword}`);
 }
 
-async function updatePaginator(maxResults: string, page: Page) {
+async function updatePaginator(page: Page, log: Log, maxResults: string) {
     let optionValue = '3';
     if (maxResults !== '*') {
         const pageSizeMap: Record<string, string> = {'10': '0', '25': '1', '50': '2', '100': '3'};
@@ -42,19 +42,29 @@ async function updatePaginator(maxResults: string, page: Page) {
     }
     await page.waitForSelector('#rowsPerPageChoice', {state: 'visible'});
     await page.selectOption('#rowsPerPageChoice', optionValue);
+    log.info(`🟣 Update paginator`);
 }
 
 async function clickOnSearchButton(page: Page, log: Log) {
+    let initTenderTotal = await retrieveTenderTotal(page);
+    log.info(`🟣 ${initTenderTotal} tenders available`);
+
     await page.waitForSelector('[data-evid="search_button"]');
 
-    await Promise.all([
-        page.waitForResponse((response) =>
-            response.url().includes('searchPanel-searchForm-submitButton') && response.status() === 200
-        ),
-        page.click('[data-evid="search_button"]'),
-        log.info(`🟣 Clicked search button`),
-    ]);
-    log.info(`🟣 New content loaded`);
+    await page.click('[data-evid="search_button"]');
+    log.info(`🟣 Clicked search button`);
+
+    await page.waitForResponse((response) => {
+        return response.url().includes('searchPanel-searchForm-submitButton') && response.status() === 200
+    });
+
+    let newTenderTotal = await retrieveTenderTotal(page);
+    while (newTenderTotal == initTenderTotal) {
+        await page.waitForTimeout(3000);
+        newTenderTotal = await retrieveTenderTotal(page);
+    }
+
+    log.info(`🟣 New content loaded - ${newTenderTotal} tenders`);
 }
 
 function extractTendersFromTable(page: Page) {
@@ -75,29 +85,30 @@ function extractTendersFromTable(page: Page) {
     });
 }
 
-async function retrievePaginatorLabel(page: Page): Promise<number> {
+async function retrieveTenderTotal(page: Page): Promise<number> {
     try {
-        const labelText = await page.textContent('.navigatorLabel div');
-        if (labelText) {
+        const element = await page.$('.navigatorLabel div');
+        const labelText = element ? await element.textContent() : null;
+        if (labelText && labelText.length > 0) {
             let totalResultsArr = labelText.match(/von\s+(\d+)/);
             if (totalResultsArr && totalResultsArr.length > 1) {
                 return parseInt(totalResultsArr[1], 10);
             }
         }
     } catch {
-        return 0;
+        log.info(`❌ 🟣 Failed extracting total from paginator label`);
+        return await page.$$eval('tbody tr', rows => rows.length);
     }
-    return 0;
+    return await page.$$eval('tbody tr', rows => rows.length);
 }
 
-async function extractTendersAndPaginateThroughTable(page: Page, maxResults: string, log: Log) {
+async function extractTendersAndPaginateThroughTable(page: Page, log: Log, maxResults: string) {
     let tenders = await extractTendersFromTable(page);
 
-    let paginatorLabel = await retrievePaginatorLabel(page);
-    let totalResults = paginatorLabel > 0 ? paginatorLabel : tenders.length
-    let paginateThrough = paginatorLabel > 0 && maxResults == '*';
+    let tenderTotal = await retrieveTenderTotal(page);
+    let paginateThrough = tenderTotal > tenders.length && maxResults == '*';
 
-    log.info(`🟣 Extracted ${tenders.length}/${totalResults} tenders`);
+    log.info(`🟣 Extracted ${tenders.length}/${tenderTotal} tenders`);
 
     if (paginateThrough) {
         while (true) {
@@ -125,7 +136,7 @@ async function extractTendersAndPaginateThroughTable(page: Page, maxResults: str
 
             const pagedTenders = await extractTendersFromTable(page);
             tenders = tenders.concat(pagedTenders);
-            log.info(`🟣 Extracted ${tenders.length}/${totalResults} tenders`);
+            log.info(`🟣 Extracted ${tenders.length}/${tenderTotal} tenders`);
         }
     }
     return tenders;
@@ -169,11 +180,11 @@ export function addGermanHandler(keyword: string, maxResults: string) {
     router.addHandler('GER', async ({request, page, log}) => {
         log.info(`🟣 Labeled handler running for: ${request.url}`);
 
-        await inputKeyword(page, keyword, log);
-        await updatePaginator(maxResults, page);
+        await inputKeyword(page, log, keyword);
+        await updatePaginator(page, log, maxResults);
         await clickOnSearchButton(page, log);
 
-        const tenders = await extractTendersAndPaginateThroughTable(page, maxResults, log);
+        const tenders = await extractTendersAndPaginateThroughTable(page, log, maxResults);
         const parsedTenders = await parseAndTranslateFields(tenders);
 
         await Dataset.pushData(parsedTenders);

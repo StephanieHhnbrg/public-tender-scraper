@@ -61,7 +61,7 @@ export function isTranslationNeeded(platformLanguage: string) {
         return false;
     }
 
-    if (userLanguage.length > 0) {
+    if (userLanguage && userLanguage.length > 0) {
         if (userLanguage.toLowerCase() != platformLanguage.toLowerCase()) {
             return true;
         } else {

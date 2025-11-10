@@ -1,6 +1,6 @@
 ## Public Tender Scraper
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](#)
-[![Playwright](https://custom-icon-badges.demolab.com/badge/Playwright-2EAD33?logo=playwright&logoColor=fff)](#)
+[![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](#)
 [![Groq](https://img.shields.io/badge/Groq-AI-FF6600?logo=groq&logoColor=fff)](#)
 
 <i>Public Tender Scraper</i> is an [Apify Actor](https://apify.com/actors) designed to collect public tender information from multiple government procurement portals.
