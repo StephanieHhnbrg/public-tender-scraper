@@ -1,6 +1,7 @@
 ## Public Tender Scraper
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](#)
 [![Playwright](https://custom-icon-badges.demolab.com/badge/Playwright-2EAD33?logo=playwright&logoColor=fff)](#)
+[![Groq](https://img.shields.io/badge/Groq-AI-FF6600?logo=groq&logoColor=fff)](#)
 
 <i>Public Tender Scraper</i> is an [Apify Actor](https://apify.com/actors) designed to collect public tender information from multiple government procurement portals.
 While public tenders ensure transparency and fair competition, counteracting favoritism and corruption, they are not publicly advertised in one place.
@@ -27,12 +28,30 @@ Supported platforms:
 🧩 Simple API integration for seamless embedding in systems <br />
 
 ### How to integrate?
-1. Generate an Apify API Key
-2. Generate an Groq API Key (optional, to enable translation feature)
-3. Invoke the Actor programmatically
-```typescript
-  // TODO: insert code
+1. Generate the API keys
+- [Apify API Key](https://console.apify.com/settings/integrations)
+- [Groq API Key](https://console.groq.com/keys) (optional, to enable translation feature)
+2. Export env variables \
+   `export APIFY_API_KEY=apify_api_...` \
+   `export GROQ_API_KEY=gsk_...`
+3. Invoke the Actor via curl
+```bash
+curl -X POST "https://api.apify.com/v2/acts/stephaniehhnbrg~public-tender-scraper-germany/runs?token=$APIFY_API_KEY" \
+    -d '{"keyword": "Ultraschall", "maxResults": "10", "groqApiKey":"'"$GROQ_API_KEY"'"}' \
+    -H 'Content-Type: application/json'
 ```
+4. Retrieve the RUN-ID from the JSON response (data > id)
+5. Check the status of the run (data > status)
+```bash
+curl "https://api.apify.com/v2/acts/stephaniehhnbrg~public-tender-scraper-germany/runs/<RUN-ID>?token=$APIFY_API_TOKEN"
+```
+6. Retrieve the DATASET-ID from the JSON response (data > defaultDatasetId)
+7. Fetch the dataset items, as soon as the run holds the status succeeded.
+```bash
+curl "https://api.apify.com/v2/datasets/<DATASET-ID>/items?view=overview"
+```
+Alternatively, open the Apify Console link from the status response (data > consoleUrl)
+- https://console.apify.com/view/runs/<RUN-ID>
 
 
 
