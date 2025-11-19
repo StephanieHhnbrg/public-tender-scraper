@@ -1,6 +1,7 @@
 export interface InputSchema { // see .actor/input_schema.json
     keyword?: string,
     maxResults?: string,
+    countries? : string,
     groqApiKey?: string,
 }
 export interface TenderDTO {

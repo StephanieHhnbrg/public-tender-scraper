@@ -23,7 +23,7 @@ export async function translateKeyword(keyword: string, platformLanguage: string
                 messages: [
                     {
                         role: "system",
-                        content: `You are a translator. Determine the user's language and translate the user's input 1:1 into ${platformLanguage}, no explaination necessary. If the input is already in ${platformLanguage}, just return the same as translation. Always output in a JSON format with the fields 'translation' and 'userLanguage'. Do not add any markup like \`\`\`json!`
+                        content: `You are a translator. Determine the user's language (German, English, ...) and translate the user's input 1:1 into ${platformLanguage}, no explaination necessary. If the input is already in ${platformLanguage}, just return the same as translation. Always output in a JSON format with the fields 'translation' and 'userLanguage'. Do not add any markup like \`\`\`json!`
                     },
                     {role: "user", content: keyword}
                 ],

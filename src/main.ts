@@ -1,25 +1,25 @@
 import { Actor, log } from 'apify';
 import { PlaywrightCrawler } from 'crawlee';
 import { InputSchema } from './interfaces.js';
-import {createRouterWithInput, router} from './routes.js';
-import { setGroqApiKey, translateKeyword } from './translator.js';
+import {createRouterWithInput, router, CountryPlatformMap} from './routes.js';
+import { setGroqApiKey } from './translator.js';
 
 
 
 await Actor.init();
 
 const input = (await Actor.getInput()) as InputSchema ?? {};
-const { keyword = 'Ultraschall', maxResults = '25', groqApiKey = '' } = input;
+const { keyword = 'Ultraschall', maxResults = '25', countries = 'GER', groqApiKey = '' } = input;
+const countryList = countries.split(",").map(item => item.trim());
 
-log.info(`🔵 Input received: keyword=${keyword}; maxResults=${maxResults}; groqApiKey=${groqApiKey.length > 0 ? '***': 'unset'}`);
+log.info(`🔵 Input received: keyword=${keyword}; maxResults=${maxResults}; countries=${countryList}; groqApiKey=${groqApiKey.length > 0 ? '***': 'unset'}`);
 setGroqApiKey(groqApiKey);
-const keywordTranslated = await translateKeyword(keyword, "German")
 
 const proxyConfiguration = await Actor.createProxyConfiguration();
 const crawler = new PlaywrightCrawler({
     proxyConfiguration,
     maxRequestsPerCrawl: 3,
-    requestHandler: createRouterWithInput({ keyword: keywordTranslated, maxResults }),
+    requestHandler: createRouterWithInput(keyword, maxResults, countryList),
     launchContext: {
         launchOptions: {
             args: [
@@ -29,7 +29,12 @@ const crawler = new PlaywrightCrawler({
     },
 });
 
+for (const c of countryList) {
+    let platform = CountryPlatformMap[c]?.startUrl;
+    if (platform) {
+        await crawler.run([platform]);
+    }
+}
 
-await crawler.run(['https://www.evergabe-online.de/start.html']);
 await crawler.exportData('./storage/datasets/result.csv');
 await Actor.exit();

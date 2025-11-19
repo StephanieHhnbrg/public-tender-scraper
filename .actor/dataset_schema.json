@@ -11,6 +11,10 @@
                 "component": "table",
                 "properties": {
                     "scrapedAt": { "label": "Scraped at", "format": "datetime" },
+                    "country": {
+                        "label": "Country",
+                        "format": "text"
+                    },
                     "title": {
                         "label": "Title",
                         "format": "text"

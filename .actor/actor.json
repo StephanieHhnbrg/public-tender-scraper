@@ -1,8 +1,8 @@
 {
 	"actorSpecification": 1,
-	"name": "public-tender-scraper-germany",
-	"title": "Public German Tender Scraper",
-	"description": "Crawlee project for public tenders in Germany",
+	"name": "public-tender-scraper",
+	"title": "Public Tender Scraper",
+	"description": "Crawlee project for public tenders",
 	"version": "0.0",
 	"meta": {
 		"templateId": "ts-crawlee-playwright-chrome"

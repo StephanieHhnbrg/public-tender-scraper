@@ -6,7 +6,7 @@
         "keyword": {
             "title": "Keyword",
             "type": "string",
-            "description": "Search term to look for in tender db.",
+            "description": "Search term to look for in tender platforms",
             "default": "Printing",
             "editor": "textfield"
         },
@@ -16,6 +16,13 @@
             "description": "How many records to fetch per search: 10, 25, 50, 100, or * for all results.",
             "enum": ["10", "25", "50", "100", "*"],
             "default": "25"
+        },
+        "countries": {
+            "title": "Countries",
+            "type": "string",
+            "description": "Which national tender platforms to be scrapped",
+            "default": "GER",
+            "editor": "textfield"
         },
         "groqApiKey": {
             "title": "Groq API Key",
