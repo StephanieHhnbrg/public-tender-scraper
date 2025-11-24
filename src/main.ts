@@ -32,6 +32,7 @@ const crawler = new PlaywrightCrawler({
 for (const c of countryList) {
     let platform = CountryPlatformMap[c]?.startUrl;
     if (platform) {
+        log.info(`🔵 Crawling ${platform}`);
         await crawler.run([platform]);
     }
 }

@@ -9,9 +9,10 @@ Each government provides their own platform, if any, to let organizations publis
 
 Supported platforms:
 
-| Country      | National procurement portal                                                                              |
-|:-------------|:---------------------------------------------------------------------------------------------------------|
-| 🇩🇪 Germany | [e-Vergabe](https://www.evergabe-online.de/start.html)                                                   |
+| Country      | National procurement portal                                                                                 |
+|:-------------|:------------------------------------------------------------------------------------------------------------|
+| 🇩🇪 Germany | [e-Vergabe](https://www.evergabe-online.de/start.html)                                                      |
+| 🇮🇪 Ireland | [gov.ie eTenders](https://www.etenders.gov.ie/epps/viewCFTSAction.do)                                       |
 | 🇪🇺 tba     | [Link](https://commission.europa.eu/funding-tenders/tools-public-buyers/public-procurement-eu-countries_en) |
 
 

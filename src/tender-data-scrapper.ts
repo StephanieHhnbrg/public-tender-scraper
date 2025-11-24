@@ -10,8 +10,28 @@ const CountrySelectorMap: Record<string, { keywordInputSelector: string; paginat
         paginatorNextSelector: 'a.next',
         searchButtonSelector: '[data-evid="search_button"]',
         responseUrl: 'searchPanel-searchForm-submitButton',
+    },
+    IRL: {
+        keywordInputSelector: '#Title.form-control',
+        paginatorSelector: '.rppSelector',
+        paginatorLabelSelector: '.rppSelector + strong + strong',
+        paginatorLabelPattern: /(\d+)\s/,
+        paginatorNextSelector: '#nextNav',
+        searchButtonSelector: '[title="Search"]',
+        responseUrl: 'etenders.gov.ie/epps',
     }
 }
+
+
+const CountryPageSizeMap: Record<string, Record<string, string>> = {
+    GER: {'10': '0', '25': '1', '50': '2', '100': '3', 'max': '3'},
+    IRL: {'10': '10', '25': '50', '50': '50', '100': '100', 'max': '100'},
+};
+
+const CountryTableColMap: Record<string, number[]> = { // title, link, refNum, org, loc, typ, releaseDate, deadline
+    GER: [0, 0, 1, 2, 3, 4, 6, 5],
+    IRL: [1, 1, 2, 3, -1, -1, 5, 6],
+};
 
 export async function inputKeyword(page: Page, log: Log, countryCode: string, keyword: string) {
     const selector = CountrySelectorMap[countryCode].keywordInputSelector;
@@ -22,9 +42,10 @@ export async function inputKeyword(page: Page, log: Log, countryCode: string, ke
 }
 
 export async function updatePaginator(page: Page, log: Log, countryCode: string, maxResults: string) {
-    let optionValue = '3';
+    const pageSizeMap: Record<string, string> = CountryPageSizeMap[countryCode];
+    let optionValue = pageSizeMap['max'];
     if (maxResults !== '*') {
-        const pageSizeMap: Record<string, string> = {'10': '0', '25': '1', '50': '2', '100': '3'};
+        // TODO: if user inputs in between value
         const maxResultsNum = parseInt(maxResults, 10);
         optionValue = pageSizeMap[maxResultsNum];
     }
@@ -32,22 +53,18 @@ export async function updatePaginator(page: Page, log: Log, countryCode: string,
     const selector = CountrySelectorMap[countryCode].paginatorSelector;
     await page.waitForSelector(selector, {state: 'visible'});
     await page.selectOption(selector, optionValue);
-    log.info(`🟣 Update paginator`);
+    log.info(`🟣 Update paginator to option ${optionValue}`);
 }
 
 export async function clickOnSearchButton(page: Page, log: Log, countryCode: string) {
     let initTenderTotal = await retrieveTenderTotal(page, countryCode);
-    log.info(`🟣 ${initTenderTotal} tenders available`);
 
     const selector = CountrySelectorMap[countryCode].searchButtonSelector;
     await page.waitForSelector(selector);
     await page.click(selector);
     log.info(`🟣 Clicked search button`);
 
-    const expectedResponseUrl = CountrySelectorMap[countryCode].responseUrl;
-    await page.waitForResponse((response) => {
-        return response.url().includes(expectedResponseUrl) && response.status() === 200
-    });
+    await waitForPageReload(page, countryCode);
 
     let newTenderTotal = await retrieveTenderTotal(page, countryCode);
     while (newTenderTotal == initTenderTotal) {
@@ -58,22 +75,33 @@ export async function clickOnSearchButton(page: Page, log: Log, countryCode: str
     log.info(`🟣 New content loaded - ${newTenderTotal} tenders`);
 }
 
-export function extractTendersFromTable(page: Page) {
-    return page.$$eval('tbody tr', (rows) => {
+export async function waitForPageReload(page: Page, countryCode: string) {
+    const expectedResponseUrl = CountrySelectorMap[countryCode].responseUrl;
+    await page.waitForResponse((response) => {
+        return response.url().includes(expectedResponseUrl) && response.status() === 200;
+    });
+}
+
+
+export async function extractTendersFromTable(page: Page, countryCode: string): Promise<any[]> {
+    const colIndices = CountryTableColMap[countryCode];
+    const selector = 'tbody tr';
+    await page.waitForSelector(selector);
+    return page.$$eval(selector, (rows, colIndices: number[]) => {
         return rows.map(row => {
             const cols = row.querySelectorAll('td');
             return {
-                title: cols[0]?.innerText.trim(),
-                link: cols[0]?.querySelector('a')?.href || null,
-                referenceNumber: cols[1]?.innerText.trim(),
-                organization: cols[2]?.innerText.trim(),
-                location: cols[3]?.innerText.trim(),
-                type: cols[4]?.innerText.trim(),
-                releaseDateText: cols[6]?.innerText.trim(),
-                deadlineText: cols[5]?.innerText.trim(),
+                    title: cols[colIndices[0]]?.innerText.trim(),
+                    link: cols[colIndices[1]]?.querySelector('a')?.href || null,
+                    referenceNumber: cols[colIndices[2]]?.innerText.trim(),
+                    organization: cols[colIndices[3]]?.innerText.trim(),
+                    location: cols[colIndices[4]]?.innerText.trim() || "",
+                    type: cols[colIndices[5]]?.innerText.trim() || "",
+                    releaseDateText: cols[colIndices[6]]?.innerText.trim() || "",
+                    deadlineText: cols[colIndices[7]]?.innerText.trim() || "",
             };
         });
-    });
+    }, colIndices);
 }
 
 export async function retrieveTenderTotal(page: Page, countryCode: string): Promise<number> {
@@ -96,7 +124,7 @@ export async function retrieveTenderTotal(page: Page, countryCode: string): Prom
 }
 
 export async function extractTendersAndPaginateThroughTable(page: Page, log: Log, countryCode: string, maxResults: string) {
-    let tenders = await extractTendersFromTable(page);
+    let tenders = await extractTendersFromTable(page, countryCode);
 
     let tenderTotal = await retrieveTenderTotal(page, countryCode);
     let paginateThrough = tenderTotal > tenders.length && maxResults == '*';
@@ -130,7 +158,7 @@ export async function extractTendersAndPaginateThroughTable(page: Page, log: Log
                 log.info(`🟣 Next page loaded`)
             ]);
 
-            const pagedTenders = await extractTendersFromTable(page);
+            const pagedTenders = await extractTendersFromTable(page, countryCode);
             tenders = tenders.concat(pagedTenders);
             log.info(`🟣 Extracted ${tenders.length}/${tenderTotal} tenders`);
         }
