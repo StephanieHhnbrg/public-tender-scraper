@@ -34,6 +34,8 @@ for (const c of countryList) {
     if (platform) {
         log.info(`🔵 Crawling ${platform}`);
         await crawler.run([platform]);
+    } else {
+        log.info(`🔵 No platform available for country=${c}`)
     }
 }
 

@@ -9,11 +9,12 @@ Each government provides their own platform, if any, to let organizations publis
 
 Supported platforms:
 
-| Country      | National procurement portal                                                                                 |
-|:-------------|:------------------------------------------------------------------------------------------------------------|
-| 🇩🇪 Germany | [e-Vergabe](https://www.evergabe-online.de/start.html)                                                      |
-| 🇮🇪 Ireland | [gov.ie eTenders](https://www.etenders.gov.ie/epps/viewCFTSAction.do)                                       |
-| 🇪🇺 tba     | [Link](https://commission.europa.eu/funding-tenders/tools-public-buyers/public-procurement-eu-countries_en) |
+| Country      | Country Code | National procurement portal                                                                                 |
+|:-------------|:-------------|:------------------------------------------------------------------------------------------------------------|
+| 🇩🇪 Germany | GER          | [e-Vergabe](https://www.evergabe-online.de/start.html)                                                      |
+| 🇮🇪 Ireland | IRL          | [gov.ie eTenders](https://www.etenders.gov.ie/epps/viewCFTSAction.do)                                       |
+| 🇫🇷 France  | FR           | [boamp](https://www.boamp.fr/pages/recherche/?sort=dateparution)                                            |
+| 🇪🇺 tba     |              | [Link](https://commission.europa.eu/funding-tenders/tools-public-buyers/public-procurement-eu-countries_en) |
 
 
 <i>Public Tender Scraper</i> can help businesses ...
@@ -37,14 +38,14 @@ Supported platforms:
    `export GROQ_API_KEY=gsk_...`
 3. Invoke the Actor via curl
 ```bash
-curl -X POST "https://api.apify.com/v2/acts/stephaniehhnbrg~public-tender-scraper-germany/runs?token=$APIFY_API_KEY" \
-    -d '{"keyword": "Ultraschall", "maxResults": "10", "groqApiKey":"'"$GROQ_API_KEY"'"}' \
+curl -X POST "https://api.apify.com/v2/acts/stephaniehhnbrg~public-tender-scraper/runs?token=$APIFY_API_KEY" \
+    -d '{"keyword": "Print", "maxResults": "10", "countries": "GER, FR" "groqApiKey":"'"$GROQ_API_KEY"'"}' \
     -H 'Content-Type: application/json'
 ```
 4. Retrieve the RUN-ID from the JSON response (data > id)
 5. Check the status of the run (data > status)
 ```bash
-curl "https://api.apify.com/v2/acts/stephaniehhnbrg~public-tender-scraper-germany/runs/<RUN-ID>?token=$APIFY_API_TOKEN"
+curl "https://api.apify.com/v2/acts/stephaniehhnbrg~public-tender-scraper/runs/<RUN-ID>?token=$APIFY_API_TOKEN"
 ```
 6. Retrieve the DATASET-ID from the JSON response (data > defaultDatasetId)
 7. Fetch the dataset items, as soon as the run holds the status succeeded.
@@ -72,7 +73,16 @@ storage/
 
 #### Run Actor locally
 1. Install Apify - [Guide](https://docs.apify.com/cli/docs/installation)
-2. Configure input parameters (keyword, maxResults, groqApiKey) by editing [INPUT.json](./storage/key_value_stores/default/INPUT.json)
+2. Configure input parameters (keyword, maxResults, groqApiKey, countries) by editing [INPUT.json](./storage/key_value_stores/default/INPUT.json)
+    ```json
+    {
+      "keyword": "Print",
+      "maxResults": "*",
+      "countries": "GER, FR",
+      "groqApiKey": "gsk_... optional"
+    }
+    ```
+
 3. Run the actor locally
     ```bash
     apify run
