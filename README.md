@@ -9,12 +9,13 @@ Each government provides their own platform, if any, to let organizations publis
 
 Supported platforms:
 
-| Country      | Country Code | National procurement portal                                                                                 |
-|:-------------|:-------------|:------------------------------------------------------------------------------------------------------------|
-| 🇩🇪 Germany | GER          | [e-Vergabe](https://www.evergabe-online.de/start.html)                                                      |
-| 🇮🇪 Ireland | IRL          | [gov.ie eTenders](https://www.etenders.gov.ie/epps/viewCFTSAction.do)                                       |
-| 🇫🇷 France  | FR           | [boamp](https://www.boamp.fr/pages/recherche/?sort=dateparution)                                            |
-| 🇪🇺 tba     |              | [Link](https://commission.europa.eu/funding-tenders/tools-public-buyers/public-procurement-eu-countries_en) |
+| Country          | Country Code | National procurement portal                                                                                 |
+|:-----------------|:-------------|:------------------------------------------------------------------------------------------------------------|
+| 🇩🇪 Germany     | GER          | [e-Vergabe](https://www.evergabe-online.de/start.html)                                                      |
+| 🇮🇪 Ireland     | IRL          | [gov.ie eTenders](https://www.etenders.gov.ie/epps/viewCFTSAction.do)                                       |
+| 🇫🇷 France      | FR           | [boamp](https://www.boamp.fr/pages/recherche/?sort=dateparution)                                            |
+| 🇵🇹 Portugal    | PT           | [IMPIC base:](https://www.base.gov.pt/Base4/en/)                                                            |
+| 🇪🇺 tba         |              | [Link](https://commission.europa.eu/funding-tenders/tools-public-buyers/public-procurement-eu-countries_en) |
 
 
 <i>Public Tender Scraper</i> can help businesses ...
@@ -28,6 +29,8 @@ Supported platforms:
 💬 Automatic translation of queries and results to/from user's language <br />
 💾 Flexible output formats: JSON and CSV <br />
 🧩 Simple API integration for seamless embedding in systems <br />
+
+🔗 [Article](https://medium.com/@stephaniehohenberg/every-actor-needs-a-script-how-to-create-an-apify-actor-2e1755ae650c)
 
 ### How to integrate?
 1. Generate the API keys
@@ -53,7 +56,7 @@ curl "https://api.apify.com/v2/acts/stephaniehhnbrg~public-tender-scraper/runs/<
 curl "https://api.apify.com/v2/datasets/<DATASET-ID>/items?view=overview"
 ```
 Alternatively, open the Apify Console link from the status response (data > consoleUrl)
-- https://console.apify.com/view/runs/<RUN-ID>
+- ```https://console.apify.com/view/runs/<RUN-ID>```
 
 
 
@@ -99,6 +102,6 @@ apify login
 apify push
 ```
 
-check out the [Apify console](https://console.apify.com/actors) and publish the actor via the  UI.
+Check out the [Apify console](https://console.apify.com/actors) and publish the actor via the  UI.
 
 

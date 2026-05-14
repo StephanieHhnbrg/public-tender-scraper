@@ -5,8 +5,7 @@ export const CountryInfoMap: Record<string, { language: string; flag: string }> 
     GER: { language: "German", flag: "🇩🇪" },
     IRL: { language: "English", flag: "🇮🇪" },
     FR: { language: "French", flag: "🇫🇷" },
-    ITA: { language: "Italian", flag: "🇮🇹" },
-    ESP: { language: "Spanish", flag: "🇪🇸" }
+    PT: { language: "Portuguese", flag: "🇵🇹" },
 };
 
 export async function parseAndTranslateFields(tenders: TenderDTO[], countryCode: string): Promise<DatasetSchema[]> {
@@ -64,6 +63,7 @@ export const CountryDateFormatMap: Record<string, { seperator: string; dateSeper
     GER: { seperator: ", ", dateSeperator: ".", timeSeperator: ":" },
     IRL: { seperator: " ", dateSeperator: "/", timeSeperator: ":" },
     FR: { seperator: " à ", dateSeperator: "/", timeSeperator: "h"},
+    PT: { seperator: " ", dateSeperator: "/", timeSeperator: ":" },
 };
 
 function convertStringToDate(dateString: string, countryCode: string): Date {
@@ -77,7 +77,7 @@ function convertStringToDate(dateString: string, countryCode: string): Date {
     const fullYear = year < 100 ? 2000 + year : year;
 
     if (timePart) {
-        const [hours, minutes, seconds] = timePart.split(dateFormat.timeSeperator).map(Number);
+        const [hours, minutes, _] = timePart.split(dateFormat.timeSeperator).map(Number);
         return new Date(fullYear, month - 1, day, hours, minutes);
     } else {
         return new Date(fullYear, month - 1, day);

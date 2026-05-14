@@ -32,6 +32,17 @@ const CountrySelectorMap: Record<string, { keywordInputSelector: string; paginat
         searchButtonSelector: 'a.fr-btn[role="button"][href="#resultarea"]',
         tenderSelector: '.fr-callout',
         responseUrl: 'search',
+    },
+    PT: {
+        keywordInputSelector: '.b-i-search.flex-fill',
+        paginatorSelector: 'na',
+        paginatorLabelSelector: '.alert-info',
+        paginatorLabelPattern: /(\d+)/,
+        paginatorNextSelector: '.page-link',
+        paginatorActiveSelector: '.page-item.active',
+        searchButtonSelector: '#search_contratos',
+        tenderSelector: 'tbody tr',
+        responseUrl: 'resultados',
     }
 }
 
@@ -224,7 +235,6 @@ export async function extractTendersAndPaginateThroughCards(page: Page, log: Log
 
     if (paginateThrough) {
         const selector = CountrySelectorMap[countryCode].paginatorNextSelector;
-        const expectedResponseUrl = CountrySelectorMap[countryCode].responseUrl;
 
         let currentPage = 1;
         while (true) {
